@@ -142,7 +142,7 @@ namespace Conta_Corrente
             Console.WriteLine();
             Console.WriteLine("Extrato conta " + numeroConta);
             foreach (Movimentacao item in movimentacoes)
-            {               
+            {
                 if (item != null)
                 {
                     Console.WriteLine();
@@ -169,7 +169,7 @@ namespace Conta_Corrente
                 CriaMovimento(valorTransferencia, 1);
 
                 //Parte do receptor
-                float valorTransferencia2 = 0;
+                
 
                 //caso saldo positivo
                 if (contaReceptora.saldo >= 0 && contaReceptora.limiteUsado == 0)
@@ -192,36 +192,64 @@ namespace Conta_Corrente
                 }
 
                 //caso saldo negativo
+                float valorTransferencia2 = 0;
                 if (contaReceptora.saldo < 0 && contaReceptora.limiteUsado != 0)
                 {
-                    contaReceptora.saldo = contaReceptora.limiteUsado + contaReceptora.saldo;
-                    valorTransferencia2 = valorTransferencia - contaReceptora.limiteUsado;
-
-                    contaReceptora.limite = contaReceptora.limiteUsado + contaReceptora.limite;
-
-                    saldo = valorTransferencia2 + saldo;
-                    Movimentacao novaMovimentacaoCreditoContaReceptora = new Movimentacao();
-                    novaMovimentacaoCreditoContaReceptora.valor = valorTransferencia;
-                    novaMovimentacaoCreditoContaReceptora.tipo = TipoMovimentacao.Credito;
-
-                    for (int i = 0; i < 10; i++)
+                    if (valorTransferencia > contaReceptora.limiteUsado)
                     {
-                        if (contaReceptora.movimentacoes[i] == null)
-                        {
-                            contaReceptora.movimentacoes[i] = novaMovimentacaoCreditoContaReceptora;
-                            break;
-                        }
+                        contaReceptora.saldo = contaReceptora.limiteUsado + contaReceptora.saldo;
+                        valorTransferencia2 = valorTransferencia - contaReceptora.limiteUsado;
+                        contaReceptora.saldo = valorTransferencia2 + contaReceptora.saldo;
 
+                        contaReceptora.limite = contaReceptora.limiteUsado + contaReceptora.limite;
+                        contaReceptora.limiteUsado = 0;
+
+                        
+                        Movimentacao novaMovimentacaoCreditoContaReceptora = new Movimentacao();
+                        novaMovimentacaoCreditoContaReceptora.valor = valorTransferencia;
+                        novaMovimentacaoCreditoContaReceptora.tipo = TipoMovimentacao.Credito;
+
+                        for (int i = 0; i < 10; i++)
+                        {
+                            if (contaReceptora.movimentacoes[i] == null)
+                            {
+                                contaReceptora.movimentacoes[i] = novaMovimentacaoCreditoContaReceptora;
+                                break;
+                            }
+
+                        }
+                    }
+
+                    if (valorTransferencia < contaReceptora.limiteUsado)
+                    {
+
+                        //se valor do deposito é menor do que o limite usado, significa que o saldo esta negativo
+                        contaReceptora.limiteUsado = contaReceptora.limiteUsado + valorTransferencia;
+                        contaReceptora.saldo = contaReceptora.saldo + valorTransferencia;
+
+                        Movimentacao novaMovimentacaoCreditoContaReceptora = new Movimentacao();
+                        novaMovimentacaoCreditoContaReceptora.valor = valorTransferencia;
+                        novaMovimentacaoCreditoContaReceptora.tipo = TipoMovimentacao.Credito;
+                        for (int i = 0; i < 10; i++)
+                        {
+                            if (contaReceptora.movimentacoes[i] == null)
+                            {
+                                contaReceptora.movimentacoes[i] = novaMovimentacaoCreditoContaReceptora;
+                                break;
+                            }
+
+                        }
                     }
                 }
-             
             }
             else
                 Console.WriteLine("Valor ultrapassa limite de transferencia.");
 
-            
-        }
 
-       
+            
+
+
+        }
     }
+
 }

@@ -23,7 +23,10 @@ namespace Conta_Corrente
             conta2.saldo = 300;
             conta2.movimentacoes = new Movimentacao[10];
 
-            conta2.TransferenciaEntreContas(conta1, 320);
+            conta2.TransferenciaEntreContas(conta1, 350);
+            conta1.TransferenciaEntreContas(conta2, 600);
+            conta1.TransferenciaEntreContas(conta2, 450);
+            conta1.EmitirSaldo();
 
             conta1.Extrato();
             conta2.Extrato();
